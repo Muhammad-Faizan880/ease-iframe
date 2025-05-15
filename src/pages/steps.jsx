@@ -1,10 +1,21 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import WeightTrackerChart from "../components/chart";
 import SimpleSlider from "../components/slider";
 
 function StepperForm() {
-  const [currentStep, setCurrentStep] = useState(1);
+  const totalSteps = 8;
+
+  const getInitialStep = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const stepFromUrl = parseInt(urlParams.get("step"), 8);
+    if (stepFromUrl && stepFromUrl >= 1 && stepFromUrl <= totalSteps) {
+      return stepFromUrl;
+    }
+    return 1;
+  };
+
+  const [currentStep, setCurrentStep] = useState(getInitialStep);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -27,7 +38,6 @@ function StepperForm() {
       "https://checkout.ease-md.com/i/29",
       "https://checkout.ease-md.com/i/46",
       "https://checkout.ease-md.com/i/51",
-
     ],
   });
 
@@ -51,7 +61,7 @@ function StepperForm() {
         .toString()
         .padStart(2, "0")}/${futureDate.getFullYear()}`;
 
-        setFormData((prev) => ({
+      setFormData((prev) => ({
         ...prev,
         weightGoalGraph: calculatedGoal,
         secondMonthGoal: secondMonth,
@@ -176,7 +186,6 @@ function StepperForm() {
   };
 
   // Total number of steps
-  const totalSteps = 8;
 
   // Handle tab input changes
   const handleTabChange = (tab) => {
@@ -186,12 +195,12 @@ function StepperForm() {
     if (tab === "home") {
       setFormData({
         ...formData,
-        sex: "Male", // Male selected
+        sex: "Male",
       });
     } else if (tab === "profile") {
       setFormData({
         ...formData,
-        sex: "Female", // Female selected
+        sex: "Female",
       });
     }
   };
@@ -213,17 +222,35 @@ function StepperForm() {
     }
   };
 
+  useEffect(() => {
+    const url = new URL(window.location);
+    url.searchParams.set("step", currentStep);
+    window.history.replaceState({}, "", url);
+  }, [currentStep]);
+
   // Navigate to next step
   const nextStep = () => {
     if (currentStep < totalSteps) {
-      setCurrentStep(currentStep + 1);
+      const next = currentStep + 1;
+      setCurrentStep(next);
+
+      // Update the URL without page reload
+      const url = new URL(window.location);
+      url.searchParams.set("step", next);
+      window.history.pushState({}, "", url);
     }
   };
 
   // Navigate to previous step
   const prevStep = () => {
     if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
+      const prev = currentStep - 1;
+      setCurrentStep(prev);
+
+      // Update the URL without page reload
+      const url = new URL(window.location);
+      url.searchParams.set("step", prev);
+      window.history.pushState({}, "", url);
     }
   };
 

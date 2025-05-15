@@ -1,18 +1,12 @@
-
-import './index.css'
-import Steps from './pages/steps'
+import "./index.css";
+import Steps from "./pages/steps";
 
 function App() {
-
-
   return (
     <>
-   
-      <Steps/>
-   
-      
+      <Steps />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
